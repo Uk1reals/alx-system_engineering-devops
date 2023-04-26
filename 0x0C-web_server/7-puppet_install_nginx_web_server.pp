@@ -1,24 +1,20 @@
-# install and set up nginx
-
+# Install Nginx web server (w/ Puppet)
 package { 'nginx':
-  ensure => 'installed',
+  ensure => installed,
+}
+
+file_line { 'aaaaa':
+  ensure => 'present',
+  path   => '/etc/nginx/sites-available/default',
+  after  => 'listen 80 default_server;',
+  line   => 'rewrite ^/redirect_me https://www.youtube.com/watch?v=QH2-TGUlwu4 permanent;',
 }
 
 file { '/var/www/html/index.html':
-  require => Package['nginx'],
-  content => 'Holberton School',
-}
-
-file_line { 'add-rewrite':
-  ensure  => 'present',
-  require => Package['nginx'],
-  path    => '/etc/nginx/sites-available/default',
-  after   => 'root /var/www/html;',
-  line    => 'rewrite ^/redirect_me https://www.youtube.com/watch?v=QH@-TGUlwu4 permanent;',
-  notify  => Service['nginx'],
+  content => 'Hello World!',
 }
 
 service { 'nginx':
   ensure  => running,
-  require => File_line['add-rewrite'],
+  require => Package['nginx'],
 }
